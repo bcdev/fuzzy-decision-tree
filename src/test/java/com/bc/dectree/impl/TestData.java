@@ -25,9 +25,9 @@ public class TestData {
         Map<String, DerivedVariable> derived = variables.derived;
         Map<String, Variable> outputs = variables.outputs;
 
-        Assignment assignment1 = new Assignment(outputs.get("o1"), outputs.get("o1").type.properties.get("ON"));
-        Assignment assignment2 = new Assignment(outputs.get("o1"), outputs.get("o1").type.properties.get("OFF"));
-        Assignment assignment3 = new Assignment(outputs.get("o1"), outputs.get("o1").type.properties.get("OFF"));
+        Assignment assignment1 = new Assignment(outputs.get("o1"), 1.);
+        Assignment assignment2 = new Assignment(outputs.get("o1"), 0.);
+        Assignment assignment3 = new Assignment(outputs.get("o1"), 0.);
 
         CompExpr comp1 = new CompExpr(inputs.get("i1"), inputs.get("i1").type.properties.get("HI"));
         CompExpr comp2 = new CompExpr(inputs.get("i2"), inputs.get("i2").type.properties.get("GOOD"));
