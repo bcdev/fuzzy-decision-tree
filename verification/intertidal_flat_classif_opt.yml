@@ -1,10 +1,10 @@
-# From Z:\related\IntertidalFlats\Prozessierungen\20160510_197-22_L8\klassifikation\dec_tree_wattklassen_l8_20160510_SH_L8_megarippel_server.txt
-
-name: IntertidalFlatClassifier
+name: com.bc.dectree.verification.IntertidalFlatClassifierOpt
 
 options:
   vectorize: func
   types: true
+
+# From Z:\related\IntertidalFlats\Prozessierungen\20160510_197-22_L8\klassifikation\dec_tree_wattklassen_l8_20160510_SH_L8_megarippel_server.txt
 
 types:
   B1:
@@ -49,10 +49,6 @@ types:
     GT_013: gt(0.13)
     GT_016: gt(0.16)
 
-  Class:
-    "FALSE":  false()
-    "TRUE":   true()
-
 
 inputs:
   #begin variable
@@ -90,7 +86,7 @@ inputs:
   #  file name = "Z:\related\IntertidalFlats\Prozessierungen\20160510_197-22_L8\indices\indices_20160510_SH_L8_sand_megarippel.data\steigung_nIR_SWIR1.img"
   #  file pos = 1
   #end variable
-  b6: number
+  # b6: B6
   #begin variable
   #  variable name = "b7"
   #  file name = "Z:\related\IntertidalFlats\Prozessierungen\20160510_197-22_L8\indices\indices_20160510_SH_L8_sand_megarippel.data\flh.img"
@@ -126,7 +122,7 @@ inputs:
   #  file name = "Z:\related\IntertidalFlats\Prozessierungen\20160510_197-22_L8\indices\indices_20160510_SH_L8_sand_megarippel.data\reflec_865.img"
   #  file pos = 1
   #end variable
-  #b15: B15
+  b15: number
   #begin variable
   #  variable name = "b16"
   #  file name = "Z:\related\IntertidalFlats\Prozessierungen\20160510_197-22_L8\indices\indices_20160510_SH_L8_sand_megarippel.data\reflec_1609.img"
@@ -144,7 +140,10 @@ inputs:
   #  file name = "Z:\related\IntertidalFlats\Prozessierungen\20160510_197-22_L8\indices\indices_20160510_SH_L8_sand_megarippel.data\summary_error.img"
   #  file pos = 1
   #end variable
-  #b100: B100
+  #- b100: B100
+  # b12+b13+b14
+  #- bsum: BSum
+
 
 outputs:
   #begin node
@@ -156,7 +155,7 @@ outputs:
   #  class value = 11
   #  class rgb = 0,0,0
   #end node
-  nodata: Class
+  nodata: number
   #begin node
   #  name = "Wasser"
   #  type = Result
@@ -166,7 +165,7 @@ outputs:
   #  class value = 10
   #  class rgb = 0,0,255
   #end node
-  Wasser: Class
+  Wasser: number
   #begin node
   #  name = "Schill"
   #  type = Result
@@ -176,7 +175,7 @@ outputs:
   #  class value = 13
   #  class rgb = 255,113,255
   #end node
-  Schill: Class
+  Schill: number
   #begin node
   #  name = "Muschel"
   #  type = Result
@@ -186,7 +185,7 @@ outputs:
   #  class value = 8
   #  class rgb = 255,0,0
   #end node
-  Muschel: Class
+  Muschel: number
   #begin node
   #  name = "dense2"
   #  type = Result
@@ -196,7 +195,7 @@ outputs:
   #  class value = 7
   #  class rgb = 46,139,87
   #end node
-  dense2: Class
+  dense2: number
   #begin node
   #  name = "dense1"
   #  type = Result
@@ -206,7 +205,7 @@ outputs:
   #  class value = 6
   #  class rgb = 0,255,0
   #end node
-  dense1: Class
+  dense1: number
   #begin node
   #  name = "Strand"
   #  type = Result
@@ -216,7 +215,7 @@ outputs:
   #  class value = 9
   #  class rgb = 230,230,230
   #end node
-  Strand: Class
+  Strand: number
   #begin node
   #  name = "Sand"
   #  type = Result
@@ -226,7 +225,7 @@ outputs:
   #  class value = 1
   #  class rgb = 255,255,75
   #end node
-  Sand: Class
+  Sand: number
   #begin node
   #  name = "Misch"
   #  type = Result
@@ -236,7 +235,7 @@ outputs:
   #  class value = 2
   #  class rgb = 255,215,0
   #end node
-  Misch: Class
+  Misch: number
   #begin node
   #  name = "Misch2"
   #  type = Result
@@ -246,7 +245,7 @@ outputs:
   #  class value = 3
   #  class rgb = 238,154,0
   #end node
-  Misch2: Class
+  Misch2: number
   #begin node
   #  name = "Schlick"
   #  type = Result
@@ -256,7 +255,7 @@ outputs:
   #  class value = 4
   #  class rgb = 125,38,205
   #end node
-  Schlick: Class
+  Schlick: number
   #begin node
   #  name = "schlick t"
   #  type = Result
@@ -266,7 +265,7 @@ outputs:
   #  class value = 5
   #  class rgb = 167,80,162
   #end node
-  schlick_t: Class
+  schlick_t: number
   #begin node
   #  name = "Wasser2"
   #  type = Result
@@ -276,141 +275,38 @@ outputs:
   #  class value = 12
   #  class rgb = 0,60,255
   #end node
-  Wasser2: Class
+  Wasser2: number
 
 derived:
   # b12+b13+b14
   bsum = b12 + b13 + b14: BSum
 
 rules:
-  #begin node
-  #  name = "nodata"
-  #  type = Decision
-  #  location = 1,1
-  #  expression = "b4 eq 0"
-  #end node
   - if b4 is NODATA:
-      nodata: TRUE
-    else:
-      #begin node
-      #  name = "vegetation?"
-      #  type = Decision
-      #  location = 2,1
-      #  parent name = "nodata"
-      #  parent decision = No
-      #  expression = "((b8 gt 0.33) and (b1 lt 0.85) ) or b8 lt 0.09"
-      #end node
-      if (b8 is GT_033 and b1 is LT_085) or b8 is LT_009:
-        #begin node
-        #  name = "Wasser?"
-        #  type = Decision
-        #  location = 3,2
-        #  parent name = "vegetation?"
-        #  parent decision = Yes
-        #  expression = "b5 lt 0.1 "
-        #end node
-        if b5 is LT_01:
-          Wasser: TRUE
+      nodata: True
+    else if (b8 is GT_033 and b1 is LT_085) or b8 is LT_009:
+      if b5 is LT_01:
+        Wasser: True
+      else if (b19 is GT_015 and (b8 is GT_04 and b8 is LT_085) and b7 is LT_05) or (b8 is GT_04 and bsum is GT_011) or (b8 is GT_035 and bsum is GT_016):
+        if bsum is GT_013:
+          Schill: True
         else:
-          #begin node
-          #  name = "muschel?"
-          #  type = Decision
-          #  location = 4,3
-          #  parent name = "Wasser?"
-          #  parent decision = No
-          #  expression = "(((b19 gt 0.15) and (b8 gt 0.4 and b8 lt 0.85) and b7 lt 0.5)) or (((b8 gt 0.4) and (b12+b13+b14 gt 0.11)) or (b8 gt 0.35 and (b12+b13+b14) gt 0.16))"
-          #end node
-          if (b19 is GT_015 and (b8 is GT_04 and b8 is LT_085) and b7 is LT_05) or (b8 is GT_04 and bsum is GT_011) or (b8 is GT_035 and bsum is GT_016):
-            #begin node
-            #  name = "Schill?"
-            #  type = Decision
-            #  location = 5,6
-            #  parent name = "muschel?"
-            #  parent decision = Yes
-            #  expression = " (b12+b13+b14) gt 0.13"
-            #end node
-            if bsum is GT_013:
-              Schill: TRUE
-            else:
-              Muschel: TRUE
-          else:
-            #begin node
-            #  name = "dense?"
-            #  type = Decision
-            #  location = 5,5
-            #  parent name = "muschel?"
-            #  parent decision = No
-            #  expression = "b8 gt 0.45"
-            #end node
-            if b8 is GT_045:
-              dense2: TRUE
-            else:
-              dense1: TRUE
+          Muschel: True
+      else if b8 is GT_045:
+        dense2: True
       else:
-        #begin node
-        #  name = "Strand?"
-        #  type = Decision
-        #  location = 3,1
-        #  parent name = "vegetation?"
-        #  parent decision = No
-        #  expression = "b1 gt 1"
-        #end node
-        if b1 is GT_1:
-          Strand: TRUE
-        else:
-          #begin node
-          #  name = "Sand?"
-          #  type = Decision
-          #  location = 4,1
-          #  parent name = "Strand?"
-          #  parent decision = No
-          #  expression = "b3 lt 0.25"
-          #end node
-          if b3 is LT_005:
-            Sand: TRUE
-          else:
-            #begin node
-            #  name = "Misch?"
-            #  type = Decision
-            #  location = 5,1
-            #  parent name = "Sand?"
-            #  parent decision = No
-            #  expression = "b3 lt 0.3 and b8 gt 0"
-            #end node
-            if b3 is LT_01 and b8 is GT_0:
-              Misch: TRUE
-            else:
-              #begin node
-              #  name = "Misch2?"
-              #  type = Decision
-              #  location = 6,1
-              #  parent name = "Misch?"
-              #  parent decision = No
-              #  expression = "b3 lt 0.35 and b8 gt 0.0"
-              #end node
-              if b3 is LT_015 and b8 is GT_0:
-                Misch2: TRUE
-              else:
-                #begin node
-                #  name = "Schlick?"
-                #  type = Decision
-                #  location = 7,1
-                #  parent name = "Misch2?"
-                #  parent decision = No
-                #  expression = "b3 lt 0.42 and b2 gt 0 and b8 gt 0.0"
-                #end node
-                if b3 is LT_02 and b2 is GT_0 and b8 is GT_0:
-                  Schlick: TRUE
-                else:
-                  #begin node
-                  #  name = "Schlick t"
-                  #  type = Decision
-                  #  location = 8,1
-                  #  parent name = "Schlick?"
-                  #  parent decision = No
-                  #  expression = "b16 gt 0 and b8 gt 0"
-                  #end node
-                  if b16 is GT_0 and b8 is GT_0:
-                    schlick_t: TRUE
-                  else:
-                    Wasser2: TRUE
+        dense1: True
+    else if b1 is GT_1:
+      Strand: True
+    else if b3 is LT_005:
+      Sand: True
+    else if b3 is LT_01 and b8 is GT_0:
+      Misch: True
+    else if b3 is LT_015 and b8 is GT_0:
+      Misch2: True
+    else if b3 is LT_02 and b2 is GT_0 and b8 is GT_0:
+      Schlick: True
+    else if b16 is GT_0 and b8 is GT_0:
+      schlick_t: True
+    else:
+      Wasser2: True

@@ -20,6 +20,26 @@ public interface DecTreeFunction {
     }
 
     /**
+     * @return size of the input vector.
+     */
+    int getInputSize();
+
+    /**
+     * @return size of the output vector.
+     */
+    int getOutputSize();
+
+    /**
+     * @return names the elements of the input vector.
+     */
+    String[] getInputNames();
+
+    /**
+     * @return names of the elements of the output vector.
+     */
+    String[] getOutputNames();
+
+    /**
      * Applies the decision tree function to the given {@code inputs} and computes {@code outputs}.
      *
      * @param inputs  The inputs

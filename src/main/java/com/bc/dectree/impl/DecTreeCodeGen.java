@@ -43,6 +43,15 @@ public class DecTreeCodeGen {
     private List<String> genCode() {
         String indent = "    ";
         String indent2 = indent + indent;
+        String indent3 = indent2 + indent;
+
+        int numInputs = doc.inputs.size();
+        int numDerived = doc.derived.size();
+        int numOutputs = doc.outputs.size();
+        int numOutputsTot = numOutputs + numDerived;
+
+        int inputIndex;
+        int outputIndex;
 
         List<String> lines = new ArrayList<>();
 
@@ -58,30 +67,58 @@ public class DecTreeCodeGen {
         lines.add("");
         lines.add(String.format("public class %s implements DecTreeFunction {", getSimpleClassName(doc.name)));
 
+        lines.add("");
+        lines.add(indent + String.format("public final int getInputSize() { return %s; }", numInputs));
+        lines.add(indent + String.format("public final int getOutputSize() { return %s; }", numOutputsTot));
+
+        lines.add("");
+        lines.add(indent + "public final String[] getInputNames() {");
+        lines.add(indent2 + "return new String[] {");
+        inputIndex = 0;
+        for (String name : doc.inputs.keySet()) {
+            lines.add(indent3 + String.format("/*%s*/ \"%s\",", inputIndex, name));
+            inputIndex++;
+        }
+        lines.add(indent2 + "};");
+        lines.add(indent + "}");
+
+        lines.add("");
+        lines.add(indent + "public final String[] getOutputNames() {");
+        lines.add(indent2 + "return new String[] {");
+        outputIndex = 0;
+        for (String name : doc.outputs.keySet()) {
+            lines.add(indent3 + String.format("/*%s*/ \"%s\",", outputIndex, name));
+            outputIndex++;
+        }
+        for (String name : doc.derived.keySet()) {
+            lines.add(indent3 + String.format("/*%s*/ \"%s\",", outputIndex, name));
+            outputIndex++;
+        }
+        lines.add(indent2 + "};");
+        lines.add(indent + "}");
+
         for (String typeName : doc.types.keySet()) {
             Type type = doc.types.get(typeName);
             for (String propertyName : type.properties.keySet()) {
                 Property property = type.properties.get(propertyName);
                 lines.add("");
-                lines.add(indent + String.format("// %s/%s", type.name, property.code));
+                lines.add(indent + String.format("// %s: %s", type.name, property.code));
                 lines.add(indent + String.format("private static double %s_%s(double x) {", type.name, property.name));
                 lines.addAll(property.membershipFunction.genCode().stream().map(s -> indent2 + s).collect(Collectors.toList()));
                 lines.add(indent + "}");
             }
         }
 
-        int numInputs = doc.inputs.size();
-        int numDerived = doc.derived.size();
-        int numOutputs = doc.outputs.size();
-
         lines.add("");
-        lines.add(indent + "public void apply(double[] inputs, double[] outputs) {");
+        lines.add(indent + "public final void apply(double[] inputs, double[] outputs) {");
         lines.add(indent2 + String.format("assert inputs.length >= %s;", numInputs));
         lines.add(indent2 + String.format("assert outputs.length >= %s;", numOutputs + numDerived));
 
+        inputIndex = 0;
+        outputIndex = 0;
+
         if (numInputs > 0) {
             lines.add("");
-            int inputIndex = 0;
             for (String name : doc.inputs.keySet()) {
                 lines.add(indent2 + String.format("double %s = inputs[%s];", name, inputIndex));
                 inputIndex++;
@@ -108,8 +145,6 @@ public class DecTreeCodeGen {
         for (DecTreeDoc.Statement statement : doc.rules) {
             lines.addAll(statement.genCode(ctx).stream().map(s -> indent2 + s).collect(Collectors.toList()));
         }
-
-        int outputIndex = 0;
 
         if (numOutputs > 0) {
             lines.add("");

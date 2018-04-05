@@ -16,11 +16,19 @@ public class ContextImpl implements Context {
     }
 
     public String getCurrent() {
+        assert varStack.size() >= 1;
         return varStack.peek();
     }
 
     public String getLast() {
+        assert varStack.size() >= 2;
         return varStack.get(varStack.size() - 2);
+    }
+
+    @Override
+    public String getPenultimate() {
+        assert varStack.size() >= 3;
+        return varStack.get(varStack.size() - 3);
     }
 
     public void push() {
@@ -29,7 +37,15 @@ public class ContextImpl implements Context {
     }
 
     public void pop() {
+        assert varStack.size() >= 1;
         varStack.pop();
+    }
+
+    public void pop(int n) {
+        assert varStack.size() >= n;
+        for (int i = 0; i < n; i++) {
+            varStack.pop();
+        }
     }
 
     private String mkVarName() {

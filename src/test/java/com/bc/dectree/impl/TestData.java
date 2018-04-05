@@ -25,9 +25,9 @@ public class TestData {
         Map<String, DerivedVariable> derived = variables.derived;
         Map<String, Variable> outputs = variables.outputs;
 
-        Assignment assignment1 = new Assignment(outputs.get("o1"), 1.);
-        Assignment assignment2 = new Assignment(outputs.get("o1"), 0.);
-        Assignment assignment3 = new Assignment(outputs.get("o1"), 0.);
+        Assignment assignment1 = new Assignment(outputs.get("o1"), 1., "");
+        Assignment assignment2 = new Assignment(outputs.get("o1"), 0., "");
+        Assignment assignment3 = new Assignment(outputs.get("o1"), 0., "");
 
         CompExpr comp1 = new CompExpr(inputs.get("i1"), inputs.get("i1").type.properties.get("HI"));
         CompExpr comp2 = new CompExpr(inputs.get("i2"), inputs.get("i2").type.properties.get("GOOD"));
@@ -35,9 +35,9 @@ public class TestData {
         AndExpr and12 = new AndExpr(comp1, comp2);
 
         List<If> ifStatement = new ArrayList<>();
-        ifStatement.add(new If(and12, assignment1));
-        ifStatement.add(new ElseIf(comp3, assignment2));
-        Else elseStatement = new Else(assignment3);
+        ifStatement.add(new If(and12, assignment1,""));
+        ifStatement.add(new ElseIf(comp3, assignment2, ""));
+        Else elseStatement = new Else(assignment3, "");
 
         List<DecTreeDoc.Statement> rules = new ArrayList<>();
         rules.add(new IfElse(ifStatement, elseStatement));

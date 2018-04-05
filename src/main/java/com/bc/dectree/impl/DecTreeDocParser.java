@@ -56,6 +56,19 @@ public class DecTreeDocParser {
         return parser.parse();
     }
 
+    private static boolean isClassName(String name) {
+        if (!name.contains(".")) {
+            return isJavaIdentifier(name);
+        }
+        String[] parts = name.split(".");
+        for (String part : parts) {
+            if (!isJavaIdentifier(part)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private static boolean isJavaIdentifier(String name) {
         if (name.isEmpty()) {
@@ -73,7 +86,7 @@ public class DecTreeDocParser {
     }
 
     private DecTreeDoc parse() throws DecTreeParseException {
-        @SuppressWarnings("unchecked") String name = toName(rootMap.get("name"), "name");
+        @SuppressWarnings("unchecked") String name = toClassName(rootMap.get("name"), "name");
         @SuppressWarnings("unchecked") String version = toString(rootMap.getOrDefault("version", DecTreeDoc.VERSION), "version");
         Map options = getMapDocElement("options", false);
         Map<String, Type> types = parseTypes("types");
@@ -122,7 +135,8 @@ public class DecTreeDocParser {
                 if (index != numStatements - 1) {
                     throw newParseException("\"else\" must be last statement");
                 }
-                elseStatement = new Else(parseStatement(toMap(bodyObj, "\"else\"-body"), variables));
+                elseStatement = new Else(parseStatement(toMap(bodyObj, "\"else\"-body"), variables),
+                                         formatCode(stmt + ":"));
             } else {
                 Matcher matcher = ELSE_IF_COND.matcher(stmt);
                 if (matcher.matches()) {
@@ -130,7 +144,8 @@ public class DecTreeDocParser {
                         throw newParseException("\"else if\" without matching \"if\"");
                     }
                     String cond = matcher.group("cond");
-                    ifStatements.add(new ElseIf(parseExpr(cond, variables), parseStatement(toMap(bodyObj, "\"else if\"-body"), variables)));
+                    ifStatements.add(new ElseIf(parseExpr(cond, variables), parseStatement(toMap(bodyObj, "\"else if\"-body"), variables),
+                                                formatCode(stmt + ":")));
                 } else {
                     matcher = IF_COND.matcher(stmt);
                     if (matcher.matches()) {
@@ -140,7 +155,8 @@ public class DecTreeDocParser {
                         ifStatements = new ArrayList<>();
                         elseStatement = null;
                         String cond = matcher.group("cond");
-                        ifStatements.add(new If(parseExpr(cond, variables), parseStatement(toMap(bodyObj, "\"if\"-body"), variables)));
+                        ifStatements.add(new If(parseExpr(cond, variables), parseStatement(toMap(bodyObj, "\"if\"-body"), variables),
+                                                formatCode(stmt + ":")));
                     } else if (isJavaIdentifier(stmt)) {
                         if (!variables.outputs.containsKey(stmt)) {
                             throw newParseException(String.format("output expected, but found \"%s\"", stmt));
@@ -162,7 +178,8 @@ public class DecTreeDocParser {
                             throw newParseException("illegal output value, must be number in the range [0, 1]");
                         }
                         Variable variable = variables.outputs.get(stmt);
-                        statements.add(new Assignment(variable, propValue));
+                        statements.add(new Assignment(variable, propValue,
+                                                      formatCode(stmt + ": " + bodyObj)));
                     } else {
                         throw newParseException("\"if\", \"else if\", or \"else\" expected");
                     }
@@ -378,6 +395,14 @@ public class DecTreeDocParser {
         return type;
     }
 
+    private String toClassName(Object value, String tag) throws DecTreeParseException {
+        String s = toString(value, tag);
+        if (!isClassName(s)) {
+            throw newParseException(String.format("invalid %s", tag));
+        }
+        return (String) value;
+    }
+
     private String toName(Object value, String tag) throws DecTreeParseException {
         String s = toString(value, tag);
         if (!isJavaIdentifier(s)) {
@@ -413,6 +438,15 @@ public class DecTreeDocParser {
 
     void popElement() {
         elementStack.pop();
+    }
+
+    private String formatCode(String code) {
+        StringBuilder indentedCode = new StringBuilder();
+        for (int i = 0; i < elementStack.size() - 3; i++) {
+            indentedCode.append("    ");
+        }
+        indentedCode.append(code);
+        return indentedCode.toString();
     }
 
     static class Variables {

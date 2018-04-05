@@ -1,4 +1,4 @@
-	expected_class	nodata	Wasser	Schill	Muschel	dense2	dense1	Strand	Sand	Misch	Misch2	Schlick	schlick_t	Wasser2
+i	expected_class	nodata	Wasser	Schill	Muschel	dense2	dense1	Strand	Sand	Misch	Misch2	Schlick	schlick_t	Wasser2
 0	1.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	0.0	0.0	0.0	0.0	0.0
 1	1.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	0.0	0.0	0.0	0.0	0.0
 2	1.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	0.0	0.0	0.0	0.0	0.0

@@ -90,6 +90,11 @@ public class DecTreeDoc {
         String getLast();
 
         /**
+         * @return name of penultimate "truth" variable.
+         */
+        String getPenultimate();
+
+        /**
          * Push a new "truth" variable.
          */
         void push();
@@ -98,6 +103,11 @@ public class DecTreeDoc {
          * Pop current "truth" variable.
          */
         void pop();
+
+        /**
+         * Pop n current "truth" variables.
+         */
+        void pop(int n);
     }
 
     public static class Type {
@@ -191,16 +201,19 @@ public class DecTreeDoc {
     public static class Assignment implements Statement {
         final Variable variable;
         final double value;
+        final String code;
 
-        public Assignment(Variable variable, double value) {
+        public Assignment(Variable variable, double value, String code) {
             assert variable != null;
             this.variable = variable;
             this.value = value;
+            this.code = code;
         }
 
         @Override
         public List<String> genCode(Context ctx) {
             List<String> lines = new ArrayList<>();
+            lines.add(String.format("// %s", code));
             if (value == 1.0) {
                 lines.add(String.format("%s = max(%s, %s);", variable.name, variable.name, ctx.getCurrent()));
             } else if (value == 0.0) {
@@ -236,17 +249,20 @@ public class DecTreeDoc {
     public static class If implements Statement {
         final Expr condition;
         final Statement body;
+        final String code;
 
-        public If(Expr condition, Statement body) {
+        public If(Expr condition, Statement body, String code) {
             assert condition != null;
             assert body != null;
             this.condition = condition;
             this.body = body;
+            this.code = code;
         }
 
         @Override
         public List<String> genCode(Context ctx) {
             List<String> lines = new ArrayList<>();
+            lines.add(String.format("// %s", code));
             lines.add(String.format("double %s = min(%s, %s);", ctx.getCurrent(), ctx.getLast(), condition.genCode()));
             lines.addAll(body.genCode(ctx));
             return lines;
@@ -254,14 +270,16 @@ public class DecTreeDoc {
     }
 
     public static class ElseIf extends If {
-        public ElseIf(Expr condition, Statement body) {
-            super(condition, body);
+        public ElseIf(Expr condition, Statement body, String code) {
+            super(condition, body, code);
         }
 
         @Override
         public List<String> genCode(Context ctx) {
             List<String> lines = new ArrayList<>();
-            lines.add(String.format("%s = max(1.0 - %s, %s);", ctx.getCurrent(), ctx.getCurrent(), condition.genCode()));
+            lines.add(String.format("// %s", code));
+            lines.add(String.format("%s = min(%s, 1.0 - %s);", ctx.getLast(), ctx.getPenultimate(), ctx.getLast()));
+            lines.add(String.format("double %s = min(1.0 - %s, %s);", ctx.getCurrent(), ctx.getLast(), condition.genCode()));
             lines.addAll(body.genCode(ctx));
             return lines;
         }
@@ -269,16 +287,19 @@ public class DecTreeDoc {
 
     public static class Else implements Statement {
         final Statement body;
+        final String code;
 
-        public Else(Statement body) {
+        public Else(Statement body, String code) {
             assert body != null;
             this.body = body;
+            this.code = code;
         }
 
         @Override
         public List<String> genCode(Context ctx) {
             List<String> lines = new ArrayList<>();
-            lines.add(String.format("%s = 1.0 - %s;", ctx.getCurrent(), ctx.getCurrent()));
+            lines.add(String.format("// %s", code));
+            lines.add(String.format("%s = min(%s, 1.0 - %s);", ctx.getCurrent(), ctx.getLast(), ctx.getCurrent()));
             lines.addAll(body.genCode(ctx));
             return lines;
         }
@@ -298,10 +319,12 @@ public class DecTreeDoc {
         public List<String> genCode(Context ctx) {
             ctx.push();
             List<String> lines = new ArrayList<>();
-            lines.add("");
-            for (If ifStatement : ifStatements) {
-                lines.addAll(ifStatement.genCode(ctx));
+            lines.addAll(ifStatements.get(0).genCode(ctx));
+            for (int i = 1; i < ifStatements.size(); i++) {
+                ctx.push();
+                lines.addAll(ifStatements.get(i).genCode(ctx));
             }
+            ctx.pop(ifStatements.size() - 1);
             if (elseStatement != null) {
                 lines.addAll(elseStatement.genCode(ctx));
             }
