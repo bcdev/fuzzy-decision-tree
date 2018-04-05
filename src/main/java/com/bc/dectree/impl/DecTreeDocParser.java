@@ -150,10 +150,19 @@ public class DecTreeDocParser {
                             ifStatements = null;
                             elseStatement = null;
                         }
-                        String propName = toName(bodyObj, "property name");
+                        double propValue;
+                        if (bodyObj instanceof Boolean) {
+                            propValue = ((boolean) bodyObj) ? 1.0 : 0.0;
+                        } else if (bodyObj instanceof Number) {
+                            propValue = ((Number) bodyObj).doubleValue();
+                            if (propValue < 0.0 || propValue > 1.0) {
+                                throw newParseException("value must be in the range [0, 1]");
+                            }
+                        } else {
+                            throw newParseException("illegal output value, must be number in the range [0, 1]");
+                        }
                         Variable variable = variables.outputs.get(stmt);
-                        Property property = variable.type.properties.get(propName);
-                        statements.add(new Assignment(variable, property));
+                        statements.add(new Assignment(variable, propValue));
                     } else {
                         throw newParseException("\"if\", \"else if\", or \"else\" expected");
                     }
@@ -185,6 +194,7 @@ public class DecTreeDocParser {
         Map map = getMapDocElement(elementName, true);
         assert map != null;
         Map<String, Type> types = new LinkedHashMap<>();
+        types.put(Type.NUMBER_TYPE.name, Type.NUMBER_TYPE);
         for (Object nameObj : map.keySet()) {
             pushElement(nameObj);
             String typeName = toName(nameObj, "type name");

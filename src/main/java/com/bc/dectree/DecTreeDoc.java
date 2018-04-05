@@ -4,10 +4,7 @@ import com.bc.dectree.impl.DecTreeDocParser;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -104,6 +101,8 @@ public class DecTreeDoc {
     }
 
     public static class Type {
+        public static final Type NUMBER_TYPE = new Type("number", Collections.emptyMap());
+
         public final String name;
         public final Map<String, Property> properties;
 
@@ -191,22 +190,24 @@ public class DecTreeDoc {
 
     public static class Assignment implements Statement {
         final Variable variable;
-        final Property property;
+        final double value;
 
-        public Assignment(Variable variable, Property property) {
+        public Assignment(Variable variable, double value) {
             assert variable != null;
-            assert property != null;
             this.variable = variable;
-            this.property = property;
+            this.value = value;
         }
 
         @Override
         public List<String> genCode(Context ctx) {
             List<String> lines = new ArrayList<>();
-            if (property.isTrue()) {
+            if (value == 1.0) {
                 lines.add(String.format("%s = max(%s, %s);", variable.name, variable.name, ctx.getCurrent()));
-            } else if (property.isFalse()) {
+            } else if (value == 0.0) {
                 lines.add(String.format("%s = max(%s, 1.0 - %s);", variable.name, variable.name, ctx.getCurrent()));
+            } else if (value > 0.0 && value < 1.0){
+                // TODO: check this, might be wrong
+                lines.add(String.format("%s = max(%s, %s * (1.0 - %s));", variable.name, variable.name, variable.name,  ctx.getCurrent()));
             } else {
                 assert false;
             }

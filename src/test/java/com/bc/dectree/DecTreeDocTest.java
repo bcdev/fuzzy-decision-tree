@@ -13,8 +13,16 @@ public class DecTreeDocTest {
     public void testParseDoc() throws IOException, DecTreeParseException {
         File yamlFile = new File("./src/test/resources/dectree_test.yml");
         DecTreeDoc doc = DecTreeDoc.parse(yamlFile);
+
         assertNotNull(doc);
+
         assertEquals("DecTree3", doc.name);
         assertEquals("1.0", doc.version);
+
+        assertNotNull(doc.types);
+        assertEquals(3, doc.types.size());
+        assertNotNull(doc.types.get("number"));
+        assertNotNull(doc.types.get("Radiance"));
+        assertNotNull(doc.types.get("Glint"));
     }
 }

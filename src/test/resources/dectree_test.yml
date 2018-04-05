@@ -26,21 +26,14 @@ types:
     LOW: inv_ramp(x1=0.0, x2=0.5)
     HIGH: ramp(x1=0.5, x2=1.0)
 
-  Cloudy:
-    'YES': true()
-    'NO': false()
-
-  Certain:
-    HIGH: true()
-    LOW: false()
 
 inputs:
   glint: Glint
   radiance: Radiance
 
 outputs:
-  cloudy: Cloudy
-  certain: Certain
+  cloudy: number
+  certain: number
 
 derived:
   radiance_mod = sqrt(1.0 + radiance * radiance): Radiance
@@ -48,16 +41,16 @@ derived:
 rules:
   - if radiance is HIGH or radiance is MIDDLE:
       if glint is LOW:
-        cloudy: 'YES'
-        certain: HIGH
+        cloudy: TRUE
+        certain: TRUE
       else:
         if glint is HIGH:
-          certain: LOW
+          certain: FALSE
     else if radiance_mod is HIGH:
-      cloudy: 'YES'
-      certain: LOW
+      cloudy: TRUE
+      certain: FALSE
     else:
-      certain: HIGH
+      certain: TRUE
       if glint is LOW:
-        cloudy: 'NO'
+        cloudy: FALSE
 
