@@ -1,5 +1,6 @@
 package com.bc.dectree.impl;
 
+import com.bc.dectree.DecTreeDoc;
 import com.bc.dectree.DecTreeDoc.*;
 import com.bc.dectree.DecTreeParseException;
 import org.junit.Assert;
@@ -19,13 +20,23 @@ public class DecTreeExprParserTest {
         variables = TestData.getVariables(types);
     }
 
+    private void assertPropDefined(Expr expr, String varName, String propName) {
+        Assert.assertNotNull(expr);
+        Assert.assertTrue(expr instanceof CompExpr);
+        Assert.assertSame(((CompExpr) expr).variable, variables.inputs.get(varName));
+        Assert.assertSame(((CompExpr) expr).property, variables.inputs.get(varName).type.properties.get(propName));
+    }
+
     @Test
     public void testComp() throws DecTreeParseException {
         Expr expr = DecTreeExprParser.parseExpr("i1 is HI", variables);
-        Assert.assertNotNull(expr);
-        Assert.assertTrue(expr instanceof CompExpr);
-        Assert.assertSame(((CompExpr) expr).variable, variables.inputs.get("i1"));
-        Assert.assertSame(((CompExpr) expr).property, variables.inputs.get("i1").type.properties.get("HI"));
+        assertPropDefined(expr, "i1", "HI");
+    }
+
+    @Test
+    public void testCompPredefinedBoolean() throws DecTreeParseException {
+        assertPropDefined(DecTreeExprParser.parseExpr("i3 is TRUE", variables), "i3", "TRUE");
+        assertPropDefined(DecTreeExprParser.parseExpr("i3 is FALSE", variables), "i3",  "FALSE");
     }
 
     @Test

@@ -45,6 +45,16 @@ public class IntertidalFlatClassifierOpt implements DecTreeFunction {
         };
     }
 
+    // boolean: (internal)
+    private static double boolean_TRUE(double x) {
+        return (x <= 0.0) ? 0.0 : (x <= 1.0) ? x : 1.0;
+    }
+
+    // boolean: (internal)
+    private static double boolean_FALSE(double x) {
+        return (x <= 0.0) ? 1.0 : (x <= 1.0) ? 1.0 - x : 0.0;
+    }
+
     // B1: lt(0.85)
     private static double B1_LT_085(double x) {
         if (0.0 == 0.0)

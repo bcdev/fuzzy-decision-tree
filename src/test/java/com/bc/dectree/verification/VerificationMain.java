@@ -1,6 +1,8 @@
 package com.bc.dectree.verification;
 
-import java.io.*;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.bc.dectree.verification.DataFrame.readCsv;
 
@@ -9,7 +11,7 @@ public class VerificationMain {
 
     public static final String INPUT_TXT = "./verification/verification_input.txt";
     public static final String EXPECTED_TXT = "./verification/verification_expected.txt";
-    public static final String OUTPUT_TXT = "./verification/verification_output_java.txt";
+    public static final String OUTPUT_TXT = "./verification/verification_output.txt";
 
     static final String[][] INPUT_NAMES = {
             {"b1", "sand-tr_abundance"},
@@ -47,6 +49,22 @@ public class VerificationMain {
     };
 
     public static void main(String[] args) throws IOException {
+        Map<String, Integer> classes = new HashMap<>();
+        classes.put("Sand", 1);
+        classes.put("Misch", 2);
+        classes.put("Misch2", 3);
+        classes.put("Schlick", 4);
+        classes.put("schlick_t", 5);
+        classes.put("dense1", 6);
+        classes.put("dense2", 7);
+        classes.put("Muschel", 8);
+        classes.put("Strand", 9);
+        classes.put("Wasser", 10);
+        classes.put("Wasser2", 12);
+        classes.put("nodata", 11);
+        classes.put("Schill", 13);
+
+
         DataFrame inputFrame = readCsv(INPUT_TXT);
         DataFrame expectedFrame = readCsv(EXPECTED_TXT);
 
@@ -68,10 +86,10 @@ public class VerificationMain {
             outputDataFrame.addRow(outputs);
 
             double actualClass = -1;
-            for (int i = 0; i < outputs.length; i++) {
+            for (int i = 0; i < outputs.length - 1; i++) {
                 double output = outputs[i];
                 if (output > 0.5) {
-                    actualClass = i;
+                    actualClass = classes.get(OUTPUT_NAMES[i]);
                 }
             }
 

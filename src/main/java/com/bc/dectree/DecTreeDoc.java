@@ -1,11 +1,14 @@
 package com.bc.dectree;
 
 import com.bc.dectree.impl.DecTreeDocParser;
+import com.bc.dectree.impl.MembershipFunctions;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.bc.dectree.impl.Utilities.map0;
 
 
 /**
@@ -111,7 +114,16 @@ public class DecTreeDoc {
     }
 
     public static class Type {
-        public static final Type NUMBER_TYPE = new Type("number", Collections.emptyMap());
+        public static final Type NUMBER = new Type("number", Collections.emptyMap());
+        public static final Type BOOLEAN = new Type("boolean", new HashMap<>());
+
+        public static final Property TRUE = new Property("TRUE", MembershipFunctions.TRUE(map0()), "(internal)");
+        public static final Property FALSE = new Property("FALSE", MembershipFunctions.FALSE(map0()), "(internal)");
+
+        static {
+            BOOLEAN.properties.put(TRUE.name, TRUE);
+            BOOLEAN.properties.put(FALSE.name, FALSE);
+        }
 
         public final String name;
         public final Map<String, Property> properties;
@@ -180,7 +192,7 @@ public class DecTreeDoc {
         public final String code;
         public final MembershipFunction membershipFunction;
 
-        public Property(String name, String code, MembershipFunction membershipFunction) {
+        public Property(String name, MembershipFunction membershipFunction, String code) {
             assert name != null;
             assert code != null;
             assert membershipFunction != null;
@@ -200,10 +212,10 @@ public class DecTreeDoc {
 
     public static class Assignment implements Statement {
         final Variable variable;
-        final double value;
+        final boolean value;
         final String code;
 
-        public Assignment(Variable variable, double value, String code) {
+        public Assignment(Variable variable, boolean value, String code) {
             assert variable != null;
             this.variable = variable;
             this.value = value;
@@ -214,15 +226,10 @@ public class DecTreeDoc {
         public List<String> genCode(Context ctx) {
             List<String> lines = new ArrayList<>();
             lines.add(String.format("// %s", code));
-            if (value == 1.0) {
+            if (value) {
                 lines.add(String.format("%s = max(%s, %s);", variable.name, variable.name, ctx.getCurrent()));
-            } else if (value == 0.0) {
-                lines.add(String.format("%s = max(%s, 1.0 - %s);", variable.name, variable.name, ctx.getCurrent()));
-            } else if (value > 0.0 && value < 1.0){
-                // TODO: check this, might be wrong
-                lines.add(String.format("%s = max(%s, %s * (1.0 - %s));", variable.name, variable.name, variable.name,  ctx.getCurrent()));
             } else {
-                assert false;
+                lines.add(String.format("%s = max(%s, 1.0 - %s);", variable.name, variable.name, ctx.getCurrent()));
             }
             return lines;
         }

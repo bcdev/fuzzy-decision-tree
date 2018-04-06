@@ -166,18 +166,26 @@ public class DecTreeDocParser {
                             ifStatements = null;
                             elseStatement = null;
                         }
-                        double propValue;
+                        Variable variable = variables.outputs.get(stmt);
+                        // TODO
+                        //if (variable.type != Type.BOOLEAN) {
+                        //    throw newParseException(String.format("output must have type \"%s\"", Type.BOOLEAN.name));
+                        //}
+                        boolean propValue;
                         if (bodyObj instanceof Boolean) {
-                            propValue = ((boolean) bodyObj) ? 1.0 : 0.0;
+                            propValue = (Boolean) bodyObj;
                         } else if (bodyObj instanceof Number) {
-                            propValue = ((Number) bodyObj).doubleValue();
-                            if (propValue < 0.0 || propValue > 1.0) {
-                                throw newParseException("value must be in the range [0, 1]");
+                            double number = ((Number) bodyObj).doubleValue();
+                            if (number == 1.0) {
+                                propValue = true;
+                            } else if (number == 0.0) {
+                                propValue = false;
+                            } else {
+                                throw newParseException("illegal output value, must be either 0 or 1");
                             }
                         } else {
-                            throw newParseException("illegal output value, must be number in the range [0, 1]");
+                            throw newParseException("illegal output value, must be either TRUE or FALSE");
                         }
-                        Variable variable = variables.outputs.get(stmt);
                         statements.add(new Assignment(variable, propValue,
                                                       formatCode(stmt + ": " + bodyObj)));
                     } else {
@@ -211,7 +219,8 @@ public class DecTreeDocParser {
         Map map = getMapDocElement(elementName, true);
         assert map != null;
         Map<String, Type> types = new LinkedHashMap<>();
-        types.put(Type.NUMBER_TYPE.name, Type.NUMBER_TYPE);
+        types.put(Type.NUMBER.name, Type.NUMBER);
+        types.put(Type.BOOLEAN.name, Type.BOOLEAN);
         for (Object nameObj : map.keySet()) {
             pushElement(nameObj);
             String typeName = toName(nameObj, "type name");
@@ -227,15 +236,15 @@ public class DecTreeDocParser {
 
     private Type parseType(String typeName, Object typeObj) throws DecTreeParseException {
         Map map = toMap(typeObj, "type definition");
-        Map<String, Property> propertys = new LinkedHashMap<>();
+        Map<String, Property> properties = new LinkedHashMap<>();
         for (Object nameObj : map.keySet()) {
             pushElement(nameObj);
             String propertyName = toName(nameObj, "property name");
             String propertyCode = toString(map.get(nameObj), "property value");
-            propertys.put(propertyName, parseProperty(propertyName, propertyCode));
+            properties.put(propertyName, parseProperty(propertyName, propertyCode));
             popElement();
         }
-        return new Type(typeName, propertys);
+        return new Type(typeName, properties);
     }
 
     private Property parseProperty(String propertyName, String propertyCode) throws DecTreeParseException {
@@ -268,7 +277,7 @@ public class DecTreeDocParser {
             throw new IllegalStateException(e);
         }
 
-        return new Property(propertyName, propertyCode, functionBody);
+        return new Property(propertyName, functionBody, propertyCode);
     }
 
     Map<String, Double> parseFunctionParameters(String functionArgsCode) throws DecTreeParseException {
@@ -395,6 +404,7 @@ public class DecTreeDocParser {
         return type;
     }
 
+    @SuppressWarnings("SameParameterValue")
     private String toClassName(Object value, String tag) throws DecTreeParseException {
         String s = toString(value, tag);
         if (!isClassName(s)) {

@@ -1,20 +1,6 @@
 name: DecTree3
 version: "1.0"
 
-options:
-  #or_pattern: max({t1}, {t2})
-  #or_pattern: min(1.0, ({t1}) + ({t2}))
-  #and_pattern: min({t1}, {t2})
-  #and_pattern: ({t1}) * ({t2})
-  #not_pattern: 1.0 - ({t})
-  #function_name: apply_rules
-  #types: false
-  #vectorize: off
-  #vectorize: prop
-  #vectorize: func
-  #parameterize: false
-  #no_jit: false
-
 types:
 
   Radiance:
@@ -32,8 +18,8 @@ inputs:
   radiance: Radiance
 
 outputs:
-  cloudy: number
-  certain: number
+  cloudy: boolean
+  certain: boolean
 
 derived:
   radiance_mod = sqrt(1.0 + radiance * radiance): Radiance

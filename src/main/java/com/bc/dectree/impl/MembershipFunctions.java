@@ -12,14 +12,18 @@ import static com.bc.dectree.impl.Utilities.*;
 /**
  * Defines possible functions which may be used as values for property definitions within a fuzzy set.
  */
-class MembershipFunctions {
+public class MembershipFunctions {
 
-    static MembershipFunction TRUE(Map<String, Object> params) {
-        return new MembershipFunction(merge(params, map0()), RETURN_TRUE);
+    public  static MembershipFunction TRUE(Map<String, Object> params) {
+        return new MembershipFunction(merge(params, map0()), "" +
+                "return (x <= 0.0) ? 0.0 : (x <= 1.0) ? x : 1.0;"
+        );
     }
 
-    static MembershipFunction FALSE(Map<String, Object> params) {
-        return new MembershipFunction(merge(params, map0()), RETURN_FALSE);
+    public static MembershipFunction FALSE(Map<String, Object> params) {
+        return new MembershipFunction(merge(params, map0()), "" +
+                "return (x <= 0.0) ? 1.0 : (x <= 1.0) ? 1.0 - x : 0.0;"
+        );
     }
 
     static MembershipFunction EQ(Map<String, Object> params) {

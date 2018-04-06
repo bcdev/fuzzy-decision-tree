@@ -44,6 +44,16 @@ public class IntertidalFlatClassifierFuz implements DecTreeFunction {
         };
     }
 
+    // boolean: (internal)
+    private static double boolean_TRUE(double x) {
+        return (x <= 0.0) ? 0.0 : (x <= 1.0) ? x : 1.0;
+    }
+
+    // boolean: (internal)
+    private static double boolean_FALSE(double x) {
+        return (x <= 0.0) ? 1.0 : (x <= 1.0) ? 1.0 - x : 0.0;
+    }
+
     // B1: lt(0.85, dx=0.05)
     private static double B1_B1_veg(double x) {
         if (0.05 == 0.0)

@@ -20,8 +20,9 @@ public class DecTreeDocTest {
         assertEquals("1.0", doc.version);
 
         assertNotNull(doc.types);
-        assertEquals(3, doc.types.size());
+        assertEquals(4, doc.types.size());
         assertNotNull(doc.types.get("number"));
+        assertNotNull(doc.types.get("boolean"));
         assertNotNull(doc.types.get("Radiance"));
         assertNotNull(doc.types.get("Glint"));
     }
