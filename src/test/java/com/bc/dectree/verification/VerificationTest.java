@@ -1,5 +1,8 @@
 package com.bc.dectree.verification;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,7 +10,7 @@ import java.util.Map;
 import static com.bc.dectree.verification.DataFrame.readCsv;
 
 
-public class VerificationMain {
+public class VerificationTest {
 
     public static final String INPUT_TXT = "./verification/verification_input.txt";
     public static final String EXPECTED_TXT = "./verification/verification_expected.txt";
@@ -48,7 +51,8 @@ public class VerificationMain {
             "bsum",
     };
 
-    public static void main(String[] args) throws IOException {
+    @Test
+    public void verifyWeGetKerstinsResults() throws IOException {
         Map<String, Integer> classes = new HashMap<>();
         classes.put("Sand", 1);
         classes.put("Misch", 2);
@@ -63,7 +67,6 @@ public class VerificationMain {
         classes.put("Wasser2", 12);
         classes.put("nodata", 11);
         classes.put("Schill", 13);
-
 
         DataFrame inputFrame = readCsv(INPUT_TXT);
         DataFrame expectedFrame = readCsv(EXPECTED_TXT);
@@ -85,7 +88,7 @@ public class VerificationMain {
             function.apply(inputs, outputs);
             outputDataFrame.addRow(outputs);
 
-            double actualClass = -1;
+            int actualClass = -1;
             for (int i = 0; i < outputs.length - 1; i++) {
                 double output = outputs[i];
                 if (output > 0.5) {
@@ -93,9 +96,9 @@ public class VerificationMain {
                 }
             }
 
-            double expectedClass = expectedFrame.getDouble("Band_1", rowIndex);
+            int expectedClass = (int) expectedFrame.getDouble("Band_1", rowIndex);
             if (actualClass != expectedClass) {
-                System.err.printf("row %s: expectedClass = %s, actualClass = %s\n", rowIndex + 1, expectedClass, actualClass);
+                Assert.assertEquals("row " + (rowIndex + 1), expectedClass, actualClass);
             }
         }
 
