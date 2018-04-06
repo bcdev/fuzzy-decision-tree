@@ -72,7 +72,7 @@ public class DecTreeDoc {
     }
 
     /**
-     * A statement: IfElse (comprising one If, any ElseIf, optional Else), Assigmment, or Block.
+     * A statement: Rule (comprising one If, any ElseIf, optional Else), Assigmment, or Block.
      */
     public interface Statement {
         List<String> genCode(Context ctx);
@@ -312,11 +312,11 @@ public class DecTreeDoc {
         }
     }
 
-    public static class IfElse implements Statement {
+    public static class Rule implements Statement {
         final List<If> ifStatements;
         final Else elseStatement;
 
-        public IfElse(List<If> ifStatements, Else elseStatement) {
+        public Rule(List<If> ifStatements, Else elseStatement) {
             assert ifStatements != null;
             this.ifStatements = ifStatements;
             this.elseStatement = elseStatement;
@@ -340,11 +340,11 @@ public class DecTreeDoc {
         }
     }
 
-    public static class CompExpr implements Expr {
+    public static class IsExpr implements Expr {
         public final Variable variable;
         public final Property property;
 
-        public CompExpr(Variable variable, Property property) {
+        public IsExpr(Variable variable, Property property) {
             assert variable != null;
             assert property != null;
             this.variable = variable;

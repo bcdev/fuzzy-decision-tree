@@ -55,23 +55,24 @@ inputs:
   b16:  B16
   b19:  B19
 
-outputs:
-  nodata:    number
-  Wasser:    number
-  Schill:    number
-  Muschel:   number
-  dense2:    number
-  dense1:    number
-  Strand:    number
-  Sand:      number
-  Misch:     number
-  Misch2:    number
-  Schlick:   number
-  schlick_t: number
-  Wasser2:   number
-
 derived:
   bsum = b12 + b13 + b14: BSum
+
+outputs:
+  nodata:    boolean
+  Wasser:    boolean
+  Schill:    boolean
+  Muschel:   boolean
+  dense2:    boolean
+  dense1:    boolean
+  Strand:    boolean
+  Sand:      boolean
+  Misch:     boolean
+  Misch2:    boolean
+  Schlick:   boolean
+  schlick_t: boolean
+  Wasser2:   boolean
+  bsum:      BSum
 
 rules:
   - if b4 is B4_nodata:

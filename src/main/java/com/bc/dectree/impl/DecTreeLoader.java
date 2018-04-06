@@ -35,7 +35,7 @@ public class DecTreeLoader {
     public static DecTreeFunction loadCode(DecTreeDoc doc) throws IOException {
         File rootDir = Files.createTempDirectory("java-").toFile();
         DecTreeLoader loader = new DecTreeLoader(rootDir, doc.name);
-        DecTreeCodeGen.writeJava(doc, loader.javaFile);
+        DecTreeCodeGen.writeJava(doc, loader.javaFile, false);
         loader.javaFile.deleteOnExit();
         loader.classFile.deleteOnExit();
         rootDir.deleteOnExit();

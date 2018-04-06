@@ -150,7 +150,7 @@ public class DecTreeDocParser {
                     matcher = IF_COND.matcher(stmt);
                     if (matcher.matches()) {
                         if (ifStatements != null) {
-                            statements.add(new IfElse(ifStatements, elseStatement));
+                            statements.add(new Rule(ifStatements, elseStatement));
                         }
                         ifStatements = new ArrayList<>();
                         elseStatement = null;
@@ -162,7 +162,7 @@ public class DecTreeDocParser {
                             throw newParseException(String.format("output expected, but found \"%s\"", stmt));
                         }
                         if (ifStatements != null) {
-                            statements.add(new IfElse(ifStatements, elseStatement));
+                            statements.add(new Rule(ifStatements, elseStatement));
                             ifStatements = null;
                             elseStatement = null;
                         }
@@ -197,7 +197,7 @@ public class DecTreeDocParser {
             index++;
         }
         if (ifStatements != null) {
-            statements.add(new IfElse(ifStatements, elseStatement));
+            statements.add(new Rule(ifStatements, elseStatement));
         }
         if (statements.size() == 1) {
             return statements.get(0);

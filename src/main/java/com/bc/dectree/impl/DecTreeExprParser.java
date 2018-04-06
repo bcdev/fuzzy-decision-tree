@@ -137,8 +137,8 @@ class DecTreeExprParser {
             throw new DecTreeParseException(String.format("\"%s\" is not a property of type \"%s\" of input \"%s\"",
                     propertyName, variable.type.name, varName));
         }
-        CompExpr compExpr = new CompExpr(variable, property);
-        return inv ? new NotExpr(compExpr) : compExpr;
+        IsExpr isExpr = new IsExpr(variable, property);
+        return inv ? new NotExpr(isExpr) : isExpr;
     }
 
     private int nextToken() {

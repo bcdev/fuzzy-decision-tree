@@ -145,6 +145,11 @@ inputs:
   #- bsum: BSum
 
 
+derived:
+  # b12+b13+b14
+  bsum = b12 + b13 + b14: BSum
+
+
 outputs:
   #begin node
   #  name = "nodata"
@@ -155,7 +160,7 @@ outputs:
   #  class value = 11
   #  class rgb = 0,0,0
   #end node
-  nodata: number
+  nodata: boolean
   #begin node
   #  name = "Wasser"
   #  type = Result
@@ -165,7 +170,7 @@ outputs:
   #  class value = 10
   #  class rgb = 0,0,255
   #end node
-  Wasser: number
+  Wasser: boolean
   #begin node
   #  name = "Schill"
   #  type = Result
@@ -175,7 +180,7 @@ outputs:
   #  class value = 13
   #  class rgb = 255,113,255
   #end node
-  Schill: number
+  Schill: boolean
   #begin node
   #  name = "Muschel"
   #  type = Result
@@ -185,7 +190,7 @@ outputs:
   #  class value = 8
   #  class rgb = 255,0,0
   #end node
-  Muschel: number
+  Muschel: boolean
   #begin node
   #  name = "dense2"
   #  type = Result
@@ -195,7 +200,7 @@ outputs:
   #  class value = 7
   #  class rgb = 46,139,87
   #end node
-  dense2: number
+  dense2: boolean
   #begin node
   #  name = "dense1"
   #  type = Result
@@ -205,7 +210,7 @@ outputs:
   #  class value = 6
   #  class rgb = 0,255,0
   #end node
-  dense1: number
+  dense1: boolean
   #begin node
   #  name = "Strand"
   #  type = Result
@@ -215,7 +220,7 @@ outputs:
   #  class value = 9
   #  class rgb = 230,230,230
   #end node
-  Strand: number
+  Strand: boolean
   #begin node
   #  name = "Sand"
   #  type = Result
@@ -225,7 +230,7 @@ outputs:
   #  class value = 1
   #  class rgb = 255,255,75
   #end node
-  Sand: number
+  Sand: boolean
   #begin node
   #  name = "Misch"
   #  type = Result
@@ -235,7 +240,7 @@ outputs:
   #  class value = 2
   #  class rgb = 255,215,0
   #end node
-  Misch: number
+  Misch: boolean
   #begin node
   #  name = "Misch2"
   #  type = Result
@@ -245,7 +250,7 @@ outputs:
   #  class value = 3
   #  class rgb = 238,154,0
   #end node
-  Misch2: number
+  Misch2: boolean
   #begin node
   #  name = "Schlick"
   #  type = Result
@@ -255,7 +260,7 @@ outputs:
   #  class value = 4
   #  class rgb = 125,38,205
   #end node
-  Schlick: number
+  Schlick: boolean
   #begin node
   #  name = "schlick t"
   #  type = Result
@@ -265,7 +270,7 @@ outputs:
   #  class value = 5
   #  class rgb = 167,80,162
   #end node
-  schlick_t: number
+  schlick_t: boolean
   #begin node
   #  name = "Wasser2"
   #  type = Result
@@ -275,11 +280,10 @@ outputs:
   #  class value = 12
   #  class rgb = 0,60,255
   #end node
-  Wasser2: number
+  Wasser2: boolean
 
-derived:
-  # b12+b13+b14
-  bsum = b12 + b13 + b14: BSum
+  bsum:    BSum
+
 
 rules:
   - if b4 is NODATA:

@@ -33,9 +33,9 @@ public class MembershipFunctions {
                                       "" +
                         "if (${dx} == 0.0)\n" +
                         "    return x == ${x0} ? 1.0 : 0.0;\n" +
-                        "double x1 = ${x0} - ${dx};\n" +
-                        "double x2 = ${x0};\n" +
-                        "double x3 = ${x0} + ${dx};\n" +
+                        "final double x1 = ${x0} - ${dx};\n" +
+                        "final double x2 = ${x0};\n" +
+                        "final double x3 = ${x0} + ${dx};\n" +
                         "if (x <= x1)\n" +
                         "    return 0.0;\n" +
                         "if (x <= x2)\n" +
@@ -53,9 +53,9 @@ public class MembershipFunctions {
                                       "" +
                         "if (${dx} == 0.0)\n" +
                         "    return x != ${x0} ? 1.0 : 0.0;\n" +
-                        "double x1 = ${x0} - ${dx};\n" +
-                        "double x2 = ${x0};\n" +
-                        "double x3 = ${x0} + ${dx};\n" +
+                        "final double x1 = ${x0} - ${dx};\n" +
+                        "final double x2 = ${x0};\n" +
+                        "final double x3 = ${x0} + ${dx};\n" +
                         "if (x <= x1)\n" +
                         "    return 1.0;\n" +
                         "if (x <= x2)\n" +
@@ -189,8 +189,8 @@ public class MembershipFunctions {
                                       String.format("" +
                                 "if (${dx} == 0.0)\n" +
                                 "    return x %s ${x0} ? 1.0 : 0.0;\n" +
-                                "double x1 = ${x0} - ${dx};\n" +
-                                "double x2 = ${x0} + ${dx};\n" +
+                                "final double x1 = ${x0} - ${dx};\n" +
+                                "final double x2 = ${x0} + ${dx};\n" +
                                 "if (x <= x1)\n" +
                                 "    return 0.0;\n" +
                                 "if (x <= x2)\n" +
@@ -207,8 +207,8 @@ public class MembershipFunctions {
                                       String.format("" +
                                 "if (${dx} == 0.0)\n" +
                                 "    return x %s ${x0} ? 1.0 : 0.0;\n" +
-                                "double x1 = ${x0} - ${dx};\n" +
-                                "double x2 = ${x0} + ${dx};\n" +
+                                "final double x1 = ${x0} - ${dx};\n" +
+                                "final double x2 = ${x0} + ${dx};\n" +
                                 "if (x <= x1)\n" +
                                 "    return 1.0;\n" +
                                 "if (x <= x2)\n" +

@@ -18,7 +18,7 @@ public class DecTreeMain {
         File dir = yamlFile.getAbsoluteFile().getParentFile();
         try {
             DecTreeDoc doc = DecTreeDoc.parse(yamlFile);
-            DecTreeCodeGen.writeJava(doc, new File(dir, getSimpleClassName(doc.name) + ".java"));
+            DecTreeCodeGen.writeJava(doc, new File(dir, getSimpleClassName(doc.name) + ".java"),true);
         } catch (IOException | DecTreeParseException e) {
             System.err.printf("Error: %s\n", e.getMessage());
         }
