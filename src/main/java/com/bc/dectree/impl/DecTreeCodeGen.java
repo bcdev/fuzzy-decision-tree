@@ -103,10 +103,6 @@ public class DecTreeCodeGen {
             lines.add(indent3 + String.format("/*%s*/ \"%s\",", outputIndex, name));
             outputIndex++;
         }
-        for (String name : doc.derived.keySet()) {
-            lines.add(indent3 + String.format("/*%s*/ \"%s\",", outputIndex, name));
-            outputIndex++;
-        }
         lines.add(indent2 + "};");
         lines.add(indent + "}");
 
