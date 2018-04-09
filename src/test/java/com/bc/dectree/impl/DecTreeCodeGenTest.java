@@ -43,7 +43,6 @@ public class DecTreeCodeGenTest {
                 "        return new String[] {\n" +
                 "            /*0*/ \"cloudy\",\n" +
                 "            /*1*/ \"certain\",\n" +
-                "            /*2*/ \"radiance_mod\",\n" +
                 "        };\n" +
                 "    }\n" +
                 "\n" +
@@ -76,17 +75,17 @@ public class DecTreeCodeGenTest {
                 "        certain = max(certain, 1.0 - _t3);\n" +
                 "        // else if radiance_mod is HIGH:\n" +
                 "        _t1 = min(_t0, 1.0 - _t1);\n" +
-                "        double _t4 = min(1.0 - _t1, Radiance_HIGH(radiance_mod));\n" +
+                "        double _t4 = min(_t1, Radiance_HIGH(radiance_mod));\n" +
                 "        //     cloudy: true\n" +
                 "        cloudy = max(cloudy, _t4);\n" +
                 "        //     certain: false\n" +
                 "        certain = max(certain, 1.0 - _t4);\n" +
                 "        // else:\n" +
-                "        _t1 = min(_t0, 1.0 - _t1);\n" +
+                "        _t4 = min(_t1, 1.0 - _t4);\n" +
                 "        //     certain: true\n" +
-                "        certain = max(certain, _t1);\n" +
+                "        certain = max(certain, _t4);\n" +
                 "        //     if glint is LOW:\n" +
-                "        double _t5 = min(_t1, Glint_LOW(glint));\n" +
+                "        double _t5 = min(_t4, Glint_LOW(glint));\n" +
                 "        //         cloudy: false\n" +
                 "        cloudy = max(cloudy, 1.0 - _t5);\n" +
                 "\n" +
@@ -182,7 +181,6 @@ public class DecTreeCodeGenTest {
                 "            /*1*/ \"o2\",\n" +
                 "            /*2*/ \"o3\",\n" +
                 "            /*3*/ \"d1\",\n" +
-                "            /*4*/ \"d1\",\n" +
                 "        };\n" +
                 "    }\n" +
                 "\n" +
@@ -206,13 +204,13 @@ public class DecTreeCodeGenTest {
                 "        o1 = max(o1, _t1);\n" +
                 "        // \n" +
                 "        _t1 = min(_t0, 1.0 - _t1);\n" +
-                "        double _t2 = min(1.0 - _t1, max(D1_GOOD(d1), boolean_FALSE(i2)));\n" +
+                "        double _t2 = min(_t1, max(D1_GOOD(d1), boolean_FALSE(i2)));\n" +
                 "        // \n" +
                 "        o2 = max(o2, _t2);\n" +
                 "        // \n" +
-                "        _t1 = min(_t0, 1.0 - _t1);\n" +
+                "        _t2 = min(_t1, 1.0 - _t2);\n" +
                 "        // \n" +
-                "        o3 = max(o3, _t1);\n" +
+                "        o3 = max(o3, _t2);\n" +
                 "\n" +
                 "        outputs[0] = o1;\n" +
                 "        outputs[1] = o2;\n" +

@@ -28,7 +28,7 @@ public class TestData {
         function.apply(inputs, outputs);
         assertAlmostEqual(0.75, outputs[0]);
         assertAlmostEqual(0.2, outputs[1]);
-        assertAlmostEqual(0.75, outputs[2]);
+        assertAlmostEqual(0.25, outputs[2]);
         assertAlmostEqual(1.05, outputs[3]);
     }
 
