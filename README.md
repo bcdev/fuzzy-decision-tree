@@ -91,81 +91,84 @@ Here is a somwehat numb but illuminating RGB-image classification (result is [he
 
 ### Syntax
 
-```yaml
-    name: <fully-qualified-java-class-name>
-    
-    version: <dectree-yaml-version-string>  # (optional, default is "1.0")
-    
-    types:
-      <type>:
-        <property>: <membership-function>
-        <property>: <membership-function>
-        ...
-      ...
-    
-    inputs:
-      <input>: <type> | number | boolean
-      <input>: <type> | number | boolean
-      ...
-          
-    outputs:
-      <output>: boolean
-      <output>: boolean
-      ...
+*yaml-file* ::=
 
-    derived:
-      <derived> = <expression>: <type> | number | boolean
-      <derived> = <expression>: <type> | number | boolean
-      ...
+&nbsp;&nbsp;`name` `:` *dectree-name*\
+\
+&nbsp;&nbsp;`version` `:` *dectree-model-version*     (optional, default is `"1.0"`)\
+\
+&nbsp;&nbsp;`types` `:`\
+&nbsp;&nbsp;&nbsp;&nbsp;*type* `:`\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*property* `:` *membership-function*\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*property* `:` *membership-function*\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...\
+&nbsp;&nbsp;&nbsp;&nbsp;...\
+\
+&nbsp;&nbsp;`inputs` `:`\
+&nbsp;&nbsp;&nbsp;&nbsp;*input* `:` *type* | `number` | `boolean`\
+&nbsp;&nbsp;&nbsp;&nbsp;*input* `:` *type* | `number` | `boolean`\
+&nbsp;&nbsp;&nbsp;&nbsp;...\
+\
+&nbsp;&nbsp;`derived` `:`\
+&nbsp;&nbsp;&nbsp;&nbsp;*derived* `=` *expression* `:` *type* | `number` | `boolean`\
+&nbsp;&nbsp;&nbsp;&nbsp;*derived* `=` *expression* `:` *type* | `number` | `boolean`\
+&nbsp;&nbsp;&nbsp;&nbsp;...\
+\
+&nbsp;&nbsp;`outputs` `:`\
+&nbsp;&nbsp;&nbsp;&nbsp;*output* `:` *type* | `number` | `boolean`\
+&nbsp;&nbsp;&nbsp;&nbsp;*output* `:` *type* | `number` | `boolean`\
+&nbsp;&nbsp;&nbsp;&nbsp;...\
+\
+&nbsp;&nbsp;`rules` `:`\
+&nbsp;&nbsp;&nbsp;&nbsp;`-` *rule*\
+&nbsp;&nbsp;&nbsp;&nbsp;`-` *rule*\
+&nbsp;&nbsp;&nbsp;&nbsp;...
 
-    rules:
-      - <rule>
-      - <rule>
-      ...
 
-```
 
 where
 
-`<rule>` ::=
-```yaml
-    if <condition>:
-        <block>
-    else if <condition>:     # optional
-        <block>
-    else if <condition>:     # optional
-        <block>
-    ...
-    else:                    # optional
-        <block>
-```
+*rule* ::=\
+&nbsp;&nbsp;`if` *condition*`:`\
+&nbsp;&nbsp;&nbsp;&nbsp;*block*\
+&nbsp;&nbsp;`else` `if` *condition*`:`    (optional)\
+&nbsp;&nbsp;&nbsp;&nbsp;*block*\
+&nbsp;&nbsp;`else` `if` *condition*`:`    (optional)\
+&nbsp;&nbsp;&nbsp;&nbsp;*block*\
+&nbsp;&nbsp;...\
+&nbsp;&nbsp;`else` `:`                    (optional)\
+&nbsp;&nbsp;&nbsp;&nbsp;*block*
 
-`<block>` ::=
-```yaml
-    <rule> | <assignment>
-    <rule> | <assignment>
-    ...
-```
+*block* ::=\
+&nbsp;&nbsp;*statement*\
+&nbsp;&nbsp;*statement*\
+&nbsp;&nbsp;...
 
-`<assignment>` ::= 
-```yaml
-    <output>: TRUE | FALSE
-``` 
+*statement* ::= *rule* | *assignment*
 
-`<condition>` ::=
-```java
-    ( <condition> )
-    | <variable> is <property> 
-    | <variable> is not <property> 
-    | not <condition>
-    | <condition> and <condition>
-    | <condition> or <condition>
-```
+*assignment* ::= *output*`:` `TRUE` | `FALSE`
 
-`<variable>` ::= 
-```
-    <input> | <derived> | <output>
-```
+*condition* ::=  `(` *condition* `)` 
+ | *variable* `is` *property* | *variable* `is` `not` *property* 
+ | `not` *condition*
+ | *condition* `and` *condition*
+ | *condition* `or` *condition*
+ 
+*variable* ::=  *input* | *derived* | *output*
+
+*dectree-name* ::= *fully-qualified-java-class-name*
+
+*dectree-model-version* ::= [SemVer](https://semver.org/)-compliant version string
+
+*type*      ::= *java-identifier* 
+
+*property*  ::= *java-identifier*
+
+*input*     ::= *java-identifier*
+
+*derived*   ::= *java-identifier*
+
+*output*    ::= *java-identifier*
 
 
 
