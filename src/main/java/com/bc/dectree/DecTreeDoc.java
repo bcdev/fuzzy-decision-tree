@@ -286,7 +286,7 @@ public class DecTreeDoc {
             List<String> lines = new ArrayList<>();
             lines.add(String.format("// %s", code));
             lines.add(String.format("%s = min(%s, 1.0 - %s);", ctx.getLast(), ctx.getPenultimate(), ctx.getLast()));
-            lines.add(String.format("double %s = min(1.0 - %s, %s);", ctx.getCurrent(), ctx.getLast(), condition.genCode()));
+            lines.add(String.format("double %s = min(%s, %s);", ctx.getCurrent(), ctx.getLast(), condition.genCode()));
             lines.addAll(body.genCode(ctx));
             return lines;
         }
@@ -331,11 +331,10 @@ public class DecTreeDoc {
                 ctx.push();
                 lines.addAll(ifStatements.get(i).genCode(ctx));
             }
-            ctx.pop(ifStatements.size() - 1);
             if (elseStatement != null) {
                 lines.addAll(elseStatement.genCode(ctx));
             }
-            ctx.pop();
+            ctx.pop(ifStatements.size());
             return lines;
         }
     }
