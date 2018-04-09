@@ -36,11 +36,6 @@ public class ContextImpl implements Context {
         varStack.push(mkVarName());
     }
 
-    public void pop() {
-        assert varStack.size() >= 1;
-        varStack.pop();
-    }
-
     public void pop(int n) {
         assert varStack.size() >= n;
         for (int i = 0; i < n; i++) {

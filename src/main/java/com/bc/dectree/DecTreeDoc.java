@@ -103,11 +103,6 @@ public class DecTreeDoc {
         void push();
 
         /**
-         * Pop current "truth" variable.
-         */
-        void pop();
-
-        /**
          * Pop n current "truth" variables.
          */
         void pop(int n);
@@ -117,8 +112,8 @@ public class DecTreeDoc {
         public static final Type NUMBER = new Type("number", Collections.emptyMap());
         public static final Type BOOLEAN = new Type("boolean", new HashMap<>());
 
-        public static final Property TRUE = new Property("TRUE", MembershipFunctions.TRUE(map0()), "(internal)");
-        public static final Property FALSE = new Property("FALSE", MembershipFunctions.FALSE(map0()), "(internal)");
+        static final Property TRUE = new Property("TRUE", MembershipFunctions.TRUE(map0()), "(internal)");
+        static final Property FALSE = new Property("FALSE", MembershipFunctions.FALSE(map0()), "(internal)");
 
         static {
             BOOLEAN.properties.put(TRUE.name, TRUE);
@@ -325,8 +320,7 @@ public class DecTreeDoc {
         @Override
         public List<String> genCode(Context ctx) {
             ctx.push();
-            List<String> lines = new ArrayList<>();
-            lines.addAll(ifStatements.get(0).genCode(ctx));
+            List<String> lines = new ArrayList<>(ifStatements.get(0).genCode(ctx));
             for (int i = 1; i < ifStatements.size(); i++) {
                 ctx.push();
                 lines.addAll(ifStatements.get(i).genCode(ctx));
