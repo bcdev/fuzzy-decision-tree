@@ -3,73 +3,65 @@ package com.bc.dectree.impl;
 import com.bc.dectree.DecTreeDoc;
 import com.bc.dectree.DecTreeFunction;
 
-import javax.tools.JavaCompiler;
-import javax.tools.ToolProvider;
+import javax.tools.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.Collections;
 
 import static com.bc.dectree.impl.Utilities.getPackageName;
 import static com.bc.dectree.impl.Utilities.getSimpleClassName;
 
 
 public class DecTreeLoader {
-    private final File rootDir;
-    private final File packageDir;
-    private final File javaFile;
-    private final File classFile;
-    private final String className;
-
-    private DecTreeLoader(File rootDir, String className) {
-        this.rootDir = rootDir;
-        this.className = className;
-        String packageName = getPackageName(className);
-        String simpleClassName = getSimpleClassName(className);
-        this.packageDir = new File(rootDir, packageName.replace('.', '/'));
-        this.javaFile = new File(packageDir, simpleClassName + ".java");
-        this.classFile = new File(packageDir, simpleClassName + ".class");
-    }
 
     public static DecTreeFunction loadCode(DecTreeDoc doc) throws IOException {
-        File rootDir = Files.createTempDirectory("java-").toFile();
-        DecTreeLoader loader = new DecTreeLoader(rootDir, doc.name);
-        DecTreeCodeGen.writeJava(doc, loader.javaFile, false);
-        loader.javaFile.deleteOnExit();
-        loader.classFile.deleteOnExit();
-        rootDir.deleteOnExit();
-        return loader.load();
-    }
-
-    private DecTreeFunction load() throws IOException {
+        String className = doc.name;
         try {
             JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-            ByteArrayOutputStream out = new ByteArrayOutputStream(16 * 1024);
+            DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+            StringWriter writer = new StringWriter();
+            DecTreeCodeGen.writeJava(doc, writer, true);
+            JavaFileObject file = new MemoryJavaFileObject(className, writer.toString());
+            StringWriter out = new StringWriter(16 * 1024);
             ByteArrayOutputStream err = new ByteArrayOutputStream(16 * 1024);
-            File codeSource = Utilities.getCodeSource(getClass());
-            if (codeSource == null) {
-                String msg = String.format("compilation of %s failed: cannot determine code source", javaFile);
-                throw new IllegalStateException(msg);
+            Iterable<? extends JavaFileObject> compilationUnits = Collections.singletonList(file);
+            JavaCompiler.CompilationTask task = compiler.getTask(out, null, diagnostics, null, null, compilationUnits);
+            boolean success = task.call();
+            if (!success) {
+                throw new IllegalStateException("compilation failed");
             }
-            compiler.run(null, out, err, "-cp", codeSource.getPath(), javaFile.getPath());
-            if (!classFile.exists()) {
-                String msg = String.format("compilation of %s failed:\n%s", javaFile, err);
-                throw new IllegalStateException(msg);
-            }
-            URLClassLoader classLoader = URLClassLoader.newInstance(new URL[]{rootDir.toURI().toURL()},
-                    Thread.currentThread().getContextClassLoader());
-            // Class<?> cls = Class.forName(className, true, classLoader);
-            Class<?> cls = classLoader.loadClass(className);
+            Class<?> cls = Class.forName(className, true, Thread.currentThread().getContextClassLoader());
             return (DecTreeFunction) cls.newInstance();
         } catch (ClassNotFoundException
                 | ClassCastException
                 | InstantiationException
                 | IllegalAccessException e) {
-            String msg = String.format("loading of %s failed: %s", classFile, e.getMessage());
+            String msg = String.format("loading of %s failed: %s", className, e.getMessage());
             throw new IllegalStateException(msg, e);
         }
     }
 
+    static class MemoryJavaFileObject extends SimpleJavaFileObject {
+        private final String code;
+
+        MemoryJavaFileObject(String name, String code) {
+            super(URI.create(String.format("string:///%s/%s",
+                                           name.replace('.', '/'),
+                                           Kind.SOURCE.extension)),
+                  Kind.SOURCE);
+            this.code = code;
+        }
+
+        @Override
+        public CharSequence getCharContent(boolean ignoreEncodingErrors) {
+            return code;
+        }
+    }
 }
