@@ -1,5 +1,9 @@
 package com.bc.dectree.impl;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -16,7 +20,7 @@ public class Utilities {
         return endIndex == -1 ? className : className.substring(endIndex + 1);
     }
 
-    public static String getPackageName(String className) {
+    static String getPackageName(String className) {
         int endIndex = className.lastIndexOf('.');
         return endIndex == -1 ? "" : className.substring(0, endIndex);
     }
@@ -79,5 +83,45 @@ public class Utilities {
             paramIndex++;
         }
         return newArgs;
+    }
+
+    static File getCodeSource(Class cls) {
+
+        ClassLoader loader = cls.getClassLoader();
+        if (loader == null) {
+            // Try the bootstrap classloader - obtained from the ultimate parent of the System Class Loader.
+            loader = ClassLoader.getSystemClassLoader();
+            while (loader != null && loader.getParent() != null) {
+                loader = loader.getParent();
+            }
+        }
+
+        if (loader != null) {
+            String className = cls.getCanonicalName();
+            URL resource = loader.getResource(className.replace(".", "/") + ".class");
+            if (resource != null) {
+                String url = resource.toString();
+                String packageName = cls.getPackage().getName();
+                int packageIndex = url.lastIndexOf(packageName.replace('.', '/'));
+                if (packageIndex > 0) {
+                    url = url.substring(0, packageIndex);
+                }
+                if (url.startsWith("jar:")) {
+                    url = url.substring(4);
+                }
+                if (url.endsWith("!/")) {
+                    url = url.substring(0, url.length() - 2);
+                }
+                if (url.startsWith("file:")) {
+                    try {
+                        return new File(new URI(url));
+                    } catch (URISyntaxException e) {
+                        // pass
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 }
