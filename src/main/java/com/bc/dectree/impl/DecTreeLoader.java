@@ -5,11 +5,14 @@ import com.bc.dectree.DecTreeFunction;
 
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
+import java.security.CodeSource;
 
 import static com.bc.dectree.impl.Utilities.getPackageName;
 import static com.bc.dectree.impl.Utilities.getSimpleClassName;
@@ -45,15 +48,32 @@ public class DecTreeLoader {
     private DecTreeFunction load() throws IOException {
         try {
             JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-            compiler.run(null, null, null, javaFile.getPath());
-            URLClassLoader classLoader = URLClassLoader.newInstance(new URL[]{rootDir.toURI().toURL()});
-            Class<?> cls = Class.forName(String.format("%s", className), true, classLoader);
+            ByteArrayOutputStream out = new ByteArrayOutputStream(16 * 1024);
+            ByteArrayOutputStream err = new ByteArrayOutputStream(16 * 1024);
+            String codePath;
+            try {
+                CodeSource codeSource = this.getClass().getProtectionDomain().getCodeSource();
+                codePath = new File(codeSource.getLocation().toURI()).getPath();
+            } catch (URISyntaxException e) {
+                String msg = String.format("compilation of %s failed: %s", javaFile, e.getMessage());
+                throw new IllegalStateException(msg, e);
+            }
+            compiler.run(null, out, err, "-cp", codePath, javaFile.getPath());
+            if (!classFile.exists()) {
+                String msg = String.format("compilation of %s failed:\n%s", javaFile, err);
+                throw new IllegalStateException(msg);
+            }
+            URLClassLoader classLoader = URLClassLoader.newInstance(new URL[]{rootDir.toURI().toURL()},
+                                                                    Thread.currentThread().getContextClassLoader());
+            // Class<?> cls = Class.forName(className, true, classLoader);
+            Class<?> cls = classLoader.loadClass(className);
             return (DecTreeFunction) cls.newInstance();
         } catch (ClassNotFoundException
                 | ClassCastException
                 | InstantiationException
                 | IllegalAccessException e) {
-            throw new IllegalStateException(e);
+            String msg = String.format("loading of %s failed: %s", classFile, e.getMessage());
+            throw new IllegalStateException(msg, e);
         }
     }
 }
